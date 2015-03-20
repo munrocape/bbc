@@ -8,45 +8,51 @@ import (
 )
 
 type Client struct {
-	Url              string
-	Categories       map[string]string
-	PrettyCategories map[string]string
+	NewsUrl          string
+	SportsUrl        string
+	NewsCategories   map[string]Category
+	SportsCategories map[string]Category
+}
+
+type Category struct {
+	Uri    string
+	Pretty string
 }
 
 func NewClient() *Client {
-	var categories = map[string]string{
-		"top":           "",
-		"world":         "world",
-		"science":       "science_and_environment",
-		"tech":          "technology",
-		"uk":            "uk",
-		"business":      "business",
-		"politics":      "politics",
-		"health":        "health",
-		"education":     "education",
-		"entertainment": "entertainment_and_arts",
+	var newsCategories = map[string]Category{
+		"top":           Category{Uri: "", Pretty: "Top Stories"},
+		"world":         Category{Uri: "world", Pretty: "World"},
+		"science":       Category{Uri: "science_and_environment", Pretty: "Science and Environment"},
+		"tech":          Category{Uri: "technology", Pretty: "Technology"},
+		"uk":            Category{Uri: "uk", Pretty: "UK"},
+		"business":      Category{Uri: "business", Pretty: "Business"},
+		"politics":      Category{Uri: "politics", Pretty: "Politics"},
+		"health":        Category{Uri: "health", Pretty: "Health"},
+		"education":     Category{Uri: "education", Pretty: "Education"},
+		"entertainment": Category{Uri: "entertainment_and_arts", Pretty: "Entertainment and Arts"},
 	}
-	var pretty = map[string]string{
-		"top":           "Top News",
-		"world":         "World",
-		"science":       "Science and Environment",
-		"tech":          "Technology",
-		"uk":            "UK",
-		"business":      "Business",
-		"politics":      "Politics",
-		"health":        "Health",
-		"education":     "Education",
-		"entertainment": "Entertainment and Arts",
+	var sportsCategories = map[string]Category{
+		"sports":       Category{Uri: "", Pretty: ""},
+		"football":     Category{Uri: "football", Pretty: "Football"},
+		"cricket":      Category{Uri: "cricket", Pretty: "Cricket"},
+		"rugby":        Category{Uri: "rugby-union", Pretty: "Rugby Union"},
+		"rugby_league": Category{Uri: "rugby-league", Pretty: "Rugby League"},
+		"tennis":       Category{Uri: "tennis", Pretty: "Tennis"},
+		"golf":         Category{Uri: "Golf", Pretty: "Golf"},
+		"snooker":      Category{Uri: "snooker", Pretty: "Snooker"},
 	}
 	var c = Client{
-		Url:              "http://www.bbc.com/news/%s/rss.xml",
-		Categories:       categories,
-		PrettyCategories: pretty,
+		NewsUrl:          "http://www.bbc.com/news/%s/rss.xml",
+		SportsUrl:        "http://feeds.bbci.co.uk/sport/0/%s/rss.xml?edition=uk",
+		NewsCategories:   newsCategories,
+		SportsCategories: sportsCategories,
 	}
 	return &c
 }
 
 func (c *Client) RequestFeed(url string) ([]byte, error) {
+	fmt.Printf("requesting: %s\n", url)
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	req.Close = true
@@ -64,29 +70,20 @@ func (c *Client) RequestFeed(url string) ([]byte, error) {
 }
 
 func (c *Client) GetFeed(category string) (Rss, error) {
-	url := fmt.Sprintf(c.Url, category)
-	rep, err := c.RequestFeed(url)
+	var url string
 	var feed Rss
+	if val, ok := c.NewsCategories[category]; ok {
+		url = fmt.Sprintf(c.NewsUrl, val.Uri)
+	} else if val, ok := c.SportsCategories[category]; ok {
+		url = fmt.Sprintf(c.SportsUrl, val.Uri)
+	} else {
+		return feed, fmt.Errorf("Invalid feed selection: %s\n", category)
+	}
+
+	rep, err := c.RequestFeed(url)
 	if err != nil {
 		return feed, err
 	}
 	xml.Unmarshal(rep, &feed)
 	return feed, nil
 }
-
-// func (c *Client) GetTop10(category string) (string, error) {
-// 	if val, ok := c.Categories[category]; ok {
-// 		rep, err := c.GetFeed(category)
-// 		if (err != nil){
-// 			return "", err
-// 		}
-// 		var urls [11]string
-// 		urls[0] = "Top Stories from BBC " + c.PrettyCategories[category]
-//     	items := world.Channel.Items
-//     	for _, element := range items {
-//     		fmt.Printf("%s %s\n", index, element)
-//     	}
-// 	} else {
-// 		return "", fmt.Errorf("Invalid feed selection: %s\n", category)
-// 	}
-// }
