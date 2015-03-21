@@ -52,7 +52,6 @@ func NewClient() *Client {
 }
 
 func (c *Client) RequestFeed(url string) ([]byte, error) {
-	fmt.Printf("requesting: %s\n", url)
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	req.Close = true
@@ -86,4 +85,14 @@ func (c *Client) GetFeed(category string) (Rss, error) {
 	}
 	xml.Unmarshal(rep, &feed)
 	return feed, nil
+}
+
+func (c *Client) GetPretty(category string) string {
+	if val, ok := c.NewsCategories[category]; ok {
+		return val.Pretty
+	} else if val, ok := c.SportsCategories[category]; ok {
+		return val.Pretty
+	} else {
+		return ""
+	}
 }
