@@ -33,7 +33,7 @@ func NewClient() *Client {
 		"entertainment": Category{Uri: "/entertainment_and_arts", Pretty: "Entertainment and Arts"},
 	}
 	var sportsCategories = map[string]Category{
-		"sports":       Category{Uri: "", Pretty: ""},
+		"sports":       Category{Uri: "", Pretty: "Sports"},
 		"football":     Category{Uri: "/football", Pretty: "Football"},
 		"cricket":      Category{Uri: "/cricket", Pretty: "Cricket"},
 		"rugby":        Category{Uri: "/rugby-union", Pretty: "Rugby Union"},
