@@ -100,10 +100,10 @@ func (c *Client) GetPretty(category string) string {
 func (c *Client) GetUrl(category string) string {
 	if _, ok := c.NewsCategories[category]; ok {
 		uri := c.NewsCategories[category].Uri
-		return fmt.Sprintf("http://www.bbc.com/news/%s", uri)
+		return fmt.Sprintf("http://www.bbc.com/news%s", uri)
 	} else if _, ok := c.SportsCategories[category]; ok {
 		uri := c.SportsCategories[category].Uri
-		return fmt.Sprintf("http://www.bbc.com/sport/0/%s", uri)
+		return fmt.Sprintf("http://www.bbc.com/sport/0%s", uri)
 	} else {
 		return ""
 	}
