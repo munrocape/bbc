@@ -98,9 +98,9 @@ func (c *Client) GetPretty(category string) string {
 }
 
 func (c *Client) GetUrl(category string) string {
-	if val, ok := c.NewsCategories[category]; ok {
+	if _, ok := c.NewsCategories[category]; ok {
 		return fmt.Sprintf("http://www.bbc.com/news/%s", category)
-	} else if val, ok := c.SportsCategories[category]; ok {
+	} else if _, ok := c.SportsCategories[category]; ok {
 		return fmt.Sprintf("http://www.bbc.com/sport/0/%s", category)
 	} else {
 		return ""
